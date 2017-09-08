@@ -1,4 +1,5 @@
-const gulp = require('gulp');
+const gulp = require('gulp'),
+      browserSync = require('browser-sync').create();
 
 const paths = {
     root: './dist',
@@ -44,12 +45,34 @@ const del = require('del');
 function clear(){
     return del(paths.root);
 }
+/**
+ * ***WATCH SOURCE FILES***
+ */
+function watch() {
+    gulp.watch(paths.styles.source, styles);
+    gulp.watch(paths.templates.pages, templates);
+}
+/**
+ * ***WATCH BUILD FILES AND RELOAD BROWSER***
+ */
+function server(){
+    browserSync.init({
+        server: paths.root
+    });
+    browserSync.watch(paths.root + '/**/*.*', browserSync.reload);
+}
+
 
 exports.templates = templates;
 exports.styles = styles;
 exports.clear = clear;
 
 gulp.task('default', gulp.series(
+    gulp.parallel(styles, templates),
+    gulp.parallel(watch, server)
+));
+
+gulp.task('build', gulp.series(
     clear,
     gulp.parallel(styles, templates)
 ));
