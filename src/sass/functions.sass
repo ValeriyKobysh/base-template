@@ -1,0 +1,6 @@
+@function rem($pxval)
+    @return (($pxval / $basefz) * 1rem)
+
+
+@function calc-width($numberColumn)
+    @return (100 / $countColumns) * $numberColumn * 1%

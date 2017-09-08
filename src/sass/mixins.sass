@@ -1,0 +1,25 @@
+@mixin size($width, $height: $width)
+    width: $width
+    height: $height
+
+@mixin transition($prop: all, $delay: 0.5s, $timing: ease)
+    transition: $prop $delay $timing
+
+@mixin fonts($font)
+    @if $font == 'rg'
+        font-family: "GothamPro-Regular", sans-serif
+    @if $font == 'lt'
+        font-family: "GothamPro-Light", sans-serif
+        font-weight: normal
+
+@mixin media-breakpoint-up($size)
+    @media (min-width: $size)
+        @content
+
+@mixin media-breakpoint-down($size)
+    @media (max-width: $size - 1px)
+        @content
+
+@mixin media-breakpoint-between($size-start, $size-end)
+    @media (min-width: $size-start) and (max-width: $size-end - 1px)
+        @content
