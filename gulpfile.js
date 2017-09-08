@@ -1,9 +1,4 @@
-const gulp = require('gulp'),
-      pug = require('gulp-pug');
-
-const sass = require('gulp-sass'),
-      rename = require('gulp-rename'),
-      sourcemaps = require('gulp-sourcemaps');
+const gulp = require('gulp');
 
 const paths = {
     root: './dist',
@@ -17,6 +12,7 @@ const paths = {
     }
 }
 
+const pug = require('gulp-pug');
 /**
  * ***PUG***
  */
@@ -26,6 +22,9 @@ function templates() {
         .pipe(gulp.dest(paths.root));
 }
 
+const sass = require('gulp-sass'),
+      rename = require('gulp-rename'),
+      sourcemaps = require('gulp-sourcemaps');
 /**
  * ***SASS***
  */
@@ -38,5 +37,19 @@ function styles() {
         .pipe(gulp.dest(paths.styles.dist))
 }
 
+const del = require('del');
+/**
+ * ***CLEAR DIST DIR***
+ */
+function clear(){
+    return del(paths.root);
+}
+
 exports.templates = templates;
 exports.styles = styles;
+exports.clear = clear;
+
+gulp.task('default', gulp.series(
+    clear,
+    gulp.parallel(styles, templates)
+));
