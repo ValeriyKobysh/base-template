@@ -1,0 +1,16 @@
+{
+  "name": "base-template",
+  "version": "1.0.0",
+  "main": "gulpfile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "ValeriyKobysh <vmksocnet@outlook.com>",
+  "license": "MIT",
+  "dependencies": {
+  },
+  "devDependencies": {
+    "gulp": "github:gulpjs/gulp#4.0",
+    "gulp-pug": "^3.3.0"
+  }
+}
