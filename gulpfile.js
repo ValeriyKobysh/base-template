@@ -1,7 +1,8 @@
 const gulp = require('gulp'),
       browserSync = require('browser-sync').create(),
       plumber = require('gulp-plumber'),
-      notify = require('gulp-notify');
+      notify = require('gulp-notify'),
+      gzip = require('gulp-gzip');
 
 const paths = {
     root: './dist',
@@ -46,7 +47,7 @@ const sass = require('gulp-sass'),
 /**
  * ***SASS***
  */
-function styles() {
+function stylesDev() {
     return gulp.src(paths.styles.source)
         .pipe(plumber({
             errorHandler: notify.onError(function(error){
@@ -66,6 +67,18 @@ function styles() {
         .pipe(sourcemaps.write())
         .pipe(rename({ suffix: '.min' }))
         .pipe(notify("Styles is done"))
+        .pipe(gulp.dest(paths.styles.dist))
+}
+function stylesBuild() {
+    return gulp.src(paths.styles.source)
+        .pipe(sass({ outputStyle: 'compressed' }))
+        .pipe(autoprefixer({
+            browsers: ['last 15 versions'],
+            cascade: false
+        }))
+        .pipe(csso())
+        .pipe(rename({ suffix: '.min' }))
+        .pipe(gzip())
         .pipe(gulp.dest(paths.styles.dist))
 }
 /**
@@ -103,16 +116,17 @@ function server(){
 
 
 exports.templates = templates;
-exports.styles = styles;
+exports.stylesDev = stylesDev;
+exports.stylesBuild = stylesBuild;
 exports.clear = clear;
 exports.images = images;
 
 gulp.task('default', gulp.series(
-    gulp.parallel(styles, templates, images),
+    gulp.parallel(stylesDev, templates, images),
     gulp.parallel(watch, server)
 ));
 
 gulp.task('build', gulp.series(
     clear,
-    gulp.parallel(styles, templates, images)
+    gulp.parallel(stylesBuild, templates, images)
 ));
