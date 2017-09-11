@@ -126,7 +126,7 @@ const gulpwebpack = require('gulp-webpack'),
 function scriptsJS() {
     return gulp.src(paths.script.entryPoint)
         .pipe(gulpwebpack(webpackConfig, webpack))
-        .pipe(gulp.dest(paths.scripts.dist));
+        .pipe(gulp.dest(paths.script.dist));
 }
 
 const del = require('del');
@@ -167,11 +167,11 @@ exports.server = server;
 exports.watch = watch;
 
 gulp.task('default', gulp.series(
-    gulp.parallel(stylesDev, templates, images, typescripts),
+    gulp.parallel(stylesDev, templates, images, typescripts, scriptsJS),
     gulp.parallel(watch, server)
 ));
 
 gulp.task('build', gulp.series(
     clear,
-    gulp.parallel(stylesBuild, templates, images, typescripts)
+    gulp.parallel(stylesBuild, templates, images, typescripts, scriptsJS)
 ));
