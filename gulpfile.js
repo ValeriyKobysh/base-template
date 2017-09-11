@@ -2,7 +2,9 @@ const gulp = require('gulp'),
       browserSync = require('browser-sync').create(),
       plumber = require('gulp-plumber'),
       notify = require('gulp-notify'),
-      gzip = require('gulp-gzip');
+      gzip = require('gulp-gzip'),
+      ts = require("gulp-typescript"),
+      tsProject = ts.createProject("tsconfig.json");
 
 const paths = {
     root: './dist',
@@ -17,6 +19,15 @@ const paths = {
     images: {
         source: './src/images/**/*.*',
         dist: 'dist/img'
+    },
+    typescript: {
+        source: './src/ts/*.ts',
+        dist: 'dist/js'
+    },
+    script: {
+        source: './src/js/*.js',
+        entryPoint: './src/js/main.js',
+        dist: 'dist/js'
     }
 }
 
@@ -81,12 +92,41 @@ function stylesBuild() {
         .pipe(gzip())
         .pipe(gulp.dest(paths.styles.dist))
 }
+const imagemin = require('gulp-imagemin'),
+      imageminGifsicle = require('imagemin-gifsicle'),
+      imageminJpegtran = require('imagemin-jpegtran'),
+      imageminOptipng = require('imagemin-optipng'),
+      imageminSvgo = require('imagemin-svgo');
 /**
  * ***IMAGES***
  */
 function images() {
     return gulp.src(paths.images.source)
+        .pipe(imagemin({
+
+        }))
         .pipe(gulp.dest(paths.images.dist));
+}
+/**
+ * TYPESCRIPTS
+ */
+function typescripts(){
+    return gulp.src(paths.typescript.source)
+        .pipe(ts({
+
+        }))
+        .pipe(gulp.dest(paths.typescript.dist))
+}
+const gulpwebpack = require('gulp-webpack'),
+      webpack = require('webpack');
+      webpackConfig = require('./webpack.config.js')
+/**
+ * SCRIPTS
+ */
+function scriptsJS() {
+    return gulp.src(paths.script.entryPoint)
+        .pipe(gulpwebpack(webpackConfig, webpack))
+        .pipe(gulp.dest(paths.scripts.dist));
 }
 
 const del = require('del');
@@ -100,9 +140,10 @@ function clear(){
  * ***WATCH SOURCE FILES***
  */
 function watch() {
-    gulp.watch(paths.styles.source, styles);
+    gulp.watch(paths.styles.source, stylesDev);
     gulp.watch(paths.templates.pages, templates);
     gulp.watch(paths.images.source, images);
+    // gulp.watch(paths.script.source, scripts);
 }
 /**
  * ***WATCH BUILD FILES AND RELOAD BROWSER***
@@ -120,13 +161,17 @@ exports.stylesDev = stylesDev;
 exports.stylesBuild = stylesBuild;
 exports.clear = clear;
 exports.images = images;
+exports.typescripts = typescripts;
+exports.scriptsJS = scriptsJS;
+exports.server = server;
+exports.watch = watch;
 
 gulp.task('default', gulp.series(
-    gulp.parallel(stylesDev, templates, images),
+    gulp.parallel(stylesDev, templates, images, typescripts),
     gulp.parallel(watch, server)
 ));
 
 gulp.task('build', gulp.series(
     clear,
-    gulp.parallel(stylesBuild, templates, images)
+    gulp.parallel(stylesBuild, templates, images, typescripts)
 ));
